@@ -2,6 +2,11 @@ import React from 'react';
 import { MapView } from './MapView';
 import { TrendingIssues } from './TrendingIssues';
 import { SuccessStories } from './SuccessStories';
+import { PriorityAlertPanel } from './PriorityAlertPanel';
+import { ReportQueue } from './ReportQueue';
+import { TeamPerformance } from './TeamPerformance';
+import { DistrictComparison } from './DistrictComparison';
+import { AnalyticsHub } from './AnalyticsHub';
 
 interface DashboardProps {
   language: 'en' | 'rw';
@@ -28,6 +33,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ language }) => {
         <p className="text-gray-600 max-w-2xl mx-auto">{t.subtitle}</p>
       </div>
       
+      <PriorityAlertPanel language={language} />
+      
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         <div className="xl:col-span-2">
           <MapView language={language} />
@@ -37,6 +44,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ language }) => {
           <SuccessStories language={language} />
         </div>
       </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <ReportQueue language={language} />
+        <TeamPerformance language={language} />
+      </div>
+
+      <DistrictComparison language={language} />
+      
+      <AnalyticsHub language={language} />
     </div>
   );
 };
