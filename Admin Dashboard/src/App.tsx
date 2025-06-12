@@ -1,55 +1,61 @@
-import React, { useState } from 'react';
-import { Header } from './components/Header';
-import { TabNavigation } from './components/TabNavigation';
-import { Dashboard } from './components/Dashboard';
-import { ReportIssue } from './components/ReportIssue';
-import { TrackReports } from './components/TrackReports';
-import { DataAccountability } from './components/DataAccountability';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import { createTheme } from '@mui/material/styles';
 import { AdminDashboard } from './components/AdminDashboard';
+import { UserManagement } from './components/UserManagement';
+import { Dashboard } from './components/Dashboard';
+import { AnalyticsHub } from './components/AnalyticsHub';
+import { ReportIssue } from './components/ReportIssue';
+import { ReportQueue } from './components/ReportQueue';
+import { TrackReports } from './components/TrackReports';
+import { TrendingIssues } from './components/TrendingIssues';
+import { DistrictComparison } from './components/DistrictComparison';
+import { TeamPerformance } from './components/TeamPerformance';
+import { MapView } from './components/MapView';
+import { PriorityAlertPanel } from './components/PriorityAlertPanel';
+import { DataAccountability } from './components/DataAccountability';
+import { SuccessStories } from './components/SuccessStories';
 
-export type TabType = 'dashboard' | 'report' | 'track' | 'data' | 'admin';
+// Create a theme instance
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+});
 
-function App() {
-  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [language, setLanguage] = useState<'en' | 'rw'>('en');
-
-  const renderActiveTab = () => {
-    switch (activeTab) {
-      case 'dashboard':
-        return <Dashboard language={language} />;
-      case 'report':
-        return <ReportIssue language={language} />;
-      case 'track':
-        return <TrackReports language={language} />;
-      case 'data':
-        return <DataAccountability language={language} />;
-      case 'admin':
-        return <AdminDashboard language={language} />;
-      default:
-        return <Dashboard language={language} />;
-    }
-  };
+const App: React.FC = () => {
+  const language = 'en'; // Default language
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-      <Header 
-        language={language}
-        setLanguage={setLanguage}
-        isAdmin={isAdmin}
-        setIsAdmin={setIsAdmin}
-      />
-      <TabNavigation 
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        language={language}
-        isAdmin={isAdmin}
-      />
-      <main className="container mx-auto px-4 py-6">
-        {renderActiveTab()}
-      </main>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        <Routes>
+          <Route path="/" element={<AdminDashboard />}>
+            <Route index element={<Dashboard language={language} />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="analytics" element={<AnalyticsHub language={language} />} />
+            <Route path="reports/issue" element={<ReportIssue language={language} />} />
+            <Route path="reports/queue" element={<ReportQueue language={language} />} />
+            <Route path="reports/track" element={<TrackReports language={language} />} />
+            <Route path="trending" element={<TrendingIssues language={language} />} />
+            <Route path="district-comparison" element={<DistrictComparison language={language} />} />
+            <Route path="team-performance" element={<TeamPerformance language={language} />} />
+            <Route path="map" element={<MapView language={language} />} />
+            <Route path="alerts" element={<PriorityAlertPanel language={language} />} />
+            <Route path="accountability" element={<DataAccountability language={language} />} />
+            <Route path="success-stories" element={<SuccessStories language={language} />} />
+          </Route>
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, FileText, Search, BarChart3, Settings } from 'lucide-react';
+import { Home, FileText, Search, BarChart3, Settings, Users } from 'lucide-react';
 import type { TabType } from '../App';
 
 interface TabNavigationProps {
@@ -21,14 +21,16 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
       report: 'Report Issue',
       track: 'Track Reports',
       data: 'Data & Accountability',
-      admin: 'Admin Panel'
+      admin: 'Admin Panel',
+      users: 'User Management'
     },
     rw: {
       dashboard: 'Muri Rusange',
       report: 'Tanga Ikibazo',
       track: 'Kurikirana Raporo',
       data: 'Amakuru n\'Ubwiyunge',
-      admin: 'Panelu y\'Ubuyobozi'
+      admin: 'Panelu y\'Ubuyobozi',
+      users: 'Gucunga Abakoresha'
     }
   };
 
@@ -39,7 +41,10 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
     { id: 'report' as TabType, label: t.report, icon: FileText },
     { id: 'track' as TabType, label: t.track, icon: Search },
     { id: 'data' as TabType, label: t.data, icon: BarChart3 },
-    ...(isAdmin ? [{ id: 'admin' as TabType, label: t.admin, icon: Settings }] : [])
+    ...(isAdmin ? [
+      { id: 'admin' as TabType, label: t.admin, icon: Settings },
+      { id: 'users' as TabType, label: t.users, icon: Users }
+    ] : [])
   ];
 
   return (

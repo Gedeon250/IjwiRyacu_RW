@@ -178,84 +178,52 @@ export const AnalyticsHub: React.FC<AnalyticsHubProps> = ({ language }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h3 className="text-xl font-bold text-gray-800">{t.title}</h3>
-          <p className="text-sm text-gray-600">{t.subtitle}</p>
-        </div>
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-          >
-            <Filter className="w-4 h-4" />
-            <span>{t.filters}</span>
-          </button>
-          <button className="flex items-center space-x-2 px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors">
-            <Download className="w-4 h-4" />
-            <span>{t.export}</span>
-          </button>
-        </div>
+    <div className="space-y-8">
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">{t.title}</h2>
+        <p className="text-gray-600">{t.subtitle}</p>
       </div>
 
-      {showFilters && (
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Calendar className="w-4 h-4 text-gray-500" />
-              <select
-                value={timeRange}
-                onChange={(e) => setTimeRange(e.target.value as 'week' | 'month' | 'year')}
-                className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="week">{t.timeRange.week}</option>
-                <option value="month">{t.timeRange.month}</option>
-                <option value="year">{t.timeRange.year}</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="text-lg font-medium text-gray-800 mb-4">{t.trends.reports}</h4>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Reports Over Time */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">{t.trends.reports}</h3>
+          <div className="h-80">
             <Line data={reportTrendsData} options={chartOptions} />
           </div>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="text-lg font-medium text-gray-800 mb-4">{t.trends.response}</h4>
+        </div>
+
+        {/* Report Types Distribution */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">{t.trends.categories}</h3>
+          <div className="h-80">
+            <Doughnut data={categoryDistributionData} options={doughnutOptions} />
+          </div>
+        </div>
+
+        {/* Resolution Time */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">{t.trends.response}</h3>
+          <div className="h-80">
             <Bar data={responseTimeData} options={chartOptions} />
           </div>
         </div>
-        <div className="space-y-6">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="text-lg font-medium text-gray-800 mb-4">{t.trends.categories}</h4>
-            <div className="h-64">
-              <Doughnut data={categoryDistributionData} options={doughnutOptions} />
+
+        {/* Key Metrics */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Key Metrics</h3>
+          <div className="space-y-4">
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-600 font-medium">{t.metrics.totalReports}</p>
+              <p className="text-2xl font-bold text-blue-800">1,234</p>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-blue-50 rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-blue-600 font-medium">{t.metrics.totalReports}</p>
-                  <p className="text-2xl font-bold text-blue-700">1,234</p>
-                </div>
-                <TrendingUp className="w-6 h-6 text-blue-500" />
-              </div>
-              <div className="mt-2 text-xs text-blue-600">+12% from last period</div>
+            <div className="p-4 bg-green-50 rounded-lg">
+              <p className="text-sm text-green-600 font-medium">{t.metrics.resolutionRate}</p>
+              <p className="text-2xl font-bold text-green-800">85%</p>
             </div>
-            <div className="bg-green-50 rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-green-600 font-medium">{t.metrics.resolutionRate}</p>
-                  <p className="text-2xl font-bold text-green-700">85%</p>
-                </div>
-                <TrendingUp className="w-6 h-6 text-green-500" />
-              </div>
-              <div className="mt-2 text-xs text-green-600">+5% from last period</div>
+            <div className="p-4 bg-purple-50 rounded-lg">
+              <p className="text-sm text-purple-600 font-medium">{t.metrics.avgResponseTime}</p>
+              <p className="text-2xl font-bold text-purple-800">32 hours</p>
             </div>
           </div>
         </div>

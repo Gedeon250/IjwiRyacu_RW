@@ -6,7 +6,9 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronUp,
-  MapPin
+  MapPin,
+  BarChart2,
+  Users
 } from 'lucide-react';
 
 interface DistrictComparisonProps {
@@ -22,6 +24,13 @@ interface DistrictMetric {
   satisfactionRating: number;
   urgentReports: number;
   trend: 'up' | 'down' | 'stable';
+  activeIssues: number;
+  categories: {
+    water: number;
+    roads: number;
+    health: number;
+    education: number;
+  };
 }
 
 export const DistrictComparison: React.FC<DistrictComparisonProps> = ({ language }) => {
@@ -79,7 +88,14 @@ export const DistrictComparison: React.FC<DistrictComparisonProps> = ({ language
       avgResponseTime: 2.1,
       satisfactionRating: 4.7,
       urgentReports: 15,
-      trend: 'up'
+      trend: 'up',
+      activeIssues: 45,
+      categories: {
+        water: 35,
+        roads: 28,
+        health: 22,
+        education: 15
+      }
     },
     {
       id: 2,
@@ -89,7 +105,14 @@ export const DistrictComparison: React.FC<DistrictComparisonProps> = ({ language
       avgResponseTime: 2.8,
       satisfactionRating: 4.5,
       urgentReports: 12,
-      trend: 'stable'
+      trend: 'stable',
+      activeIssues: 38,
+      categories: {
+        water: 30,
+        roads: 32,
+        health: 18,
+        education: 12
+      }
     },
     {
       id: 3,
@@ -99,7 +122,14 @@ export const DistrictComparison: React.FC<DistrictComparisonProps> = ({ language
       avgResponseTime: 3.2,
       satisfactionRating: 4.2,
       urgentReports: 18,
-      trend: 'down'
+      trend: 'down',
+      activeIssues: 42,
+      categories: {
+        water: 32,
+        roads: 30,
+        health: 20,
+        education: 14
+      }
     },
     {
       id: 4,
@@ -109,7 +139,14 @@ export const DistrictComparison: React.FC<DistrictComparisonProps> = ({ language
       avgResponseTime: 2.9,
       satisfactionRating: 4.4,
       urgentReports: 10,
-      trend: 'up'
+      trend: 'up',
+      activeIssues: 38,
+      categories: {
+        water: 30,
+        roads: 32,
+        health: 18,
+        education: 12
+      }
     }
   ];
 
@@ -161,84 +198,107 @@ export const DistrictComparison: React.FC<DistrictComparisonProps> = ({ language
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h3 className="text-xl font-bold text-gray-800">{t.title}</h3>
-          <p className="text-sm text-gray-600">{t.subtitle}</p>
-        </div>
-        <MapPin className="w-6 h-6 text-gray-400" />
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">{t.title}</h2>
+        <p className="text-gray-600">{t.subtitle}</p>
       </div>
 
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {t.selectMetric}
-        </label>
-        <select
-          value={selectedMetric}
-          onChange={(e) => setSelectedMetric(e.target.value as keyof DistrictMetric)}
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="totalReports">{t.totalReports}</option>
-          <option value="resolvedReports">{t.resolvedReports}</option>
-          <option value="avgResponseTime">{t.avgResponseTime}</option>
-          <option value="satisfactionRating">{t.satisfactionRating}</option>
-          <option value="urgentReports">{t.urgentReports}</option>
-        </select>
-      </div>
-
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {sortedDistricts.map((district) => (
-          <div key={district.id} className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <h4 className="font-medium text-gray-900">{district.name}</h4>
-                <span className={`flex items-center space-x-1 text-sm ${getTrendColor(district.trend)}`}>
-                  {getTrendIcon(district.trend)}
-                  <span>{t.trend[district.trend]}</span>
-                </span>
+          <div key={district.id} className="bg-white rounded-xl shadow-lg p-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">{district.name} District</h3>
+
+            {/* Key Metrics */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-1">
+                  <BarChart2 className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-600">{t.totalReports}</span>
+                </div>
+                <div className="text-2xl font-bold text-blue-800">{district.totalReports}</div>
               </div>
-              <div className="text-sm text-gray-500">{t.timeFrame}</div>
+
+              <div className="bg-green-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-1">
+                  <TrendingUp className="w-4 h-4 text-green-600" />
+                  <span className="text-sm font-medium text-green-600">{t.resolvedReports}</span>
+                </div>
+                <div className="text-2xl font-bold text-green-800">{district.resolvedReports}</div>
+              </div>
+
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-1">
+                  <AlertTriangle className="w-4 h-4 text-orange-600" />
+                  <span className="text-sm font-medium text-orange-600">{t.urgentReports}</span>
+                </div>
+                <div className="text-2xl font-bold text-orange-800">{district.urgentReports}</div>
+              </div>
+
+              <div className="bg-purple-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-1">
+                  <Users className="w-4 h-4 text-purple-600" />
+                  <span className="text-sm font-medium text-purple-600">{t.satisfactionRating}</span>
+                </div>
+                <div className="text-2xl font-bold text-purple-800">{district.satisfactionRating}</div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div>
-                <p className="text-sm text-gray-600">{t.totalReports}</p>
-                <p className="font-medium text-gray-900">{district.totalReports}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">{t.resolvedReports}</p>
-                <p className="font-medium text-gray-900">
-                  {district.resolvedReports}
-                  <span className="text-sm text-gray-500 ml-1">
-                    ({Math.round((district.resolvedReports / district.totalReports) * 100)}%)
-                  </span>
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">{t.avgResponseTime}</p>
-                <p className={`font-medium ${getMetricColor('avgResponseTime', district.avgResponseTime)}`}>
-                  {district.avgResponseTime}h
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">{t.satisfactionRating}</p>
-                <p className={`font-medium ${getMetricColor('satisfactionRating', district.satisfactionRating)}`}>
-                  {district.satisfactionRating}
-                </p>
+            {/* Category Distribution */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Issue Categories</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Water Access</span>
+                  <span className="text-sm font-medium text-gray-800">{district.categories.water}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full"
+                    style={{ width: `${district.categories.water}%` }}
+                  />
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Road Repair</span>
+                  <span className="text-sm font-medium text-gray-800">{district.categories.roads}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-yellow-600 h-2 rounded-full"
+                    style={{ width: `${district.categories.roads}%` }}
+                  />
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Healthcare</span>
+                  <span className="text-sm font-medium text-gray-800">{district.categories.health}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-red-600 h-2 rounded-full"
+                    style={{ width: `${district.categories.health}%` }}
+                  />
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Education</span>
+                  <span className="text-sm font-medium text-gray-800">{district.categories.education}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-purple-600 h-2 rounded-full"
+                    style={{ width: `${district.categories.education}%` }}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="mt-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">{t.urgentReports}</span>
-                <span className="font-medium text-red-600">{district.urgentReports}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                <div 
-                  className="bg-red-500 h-2 rounded-full" 
-                  style={{ width: `${(district.urgentReports / district.totalReports) * 100}%` }}
-                />
+            {/* Response Time */}
+            <div className="mt-6 pt-6 border-t border-gray-100">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">{t.avgResponseTime}</span>
+                <span className="text-sm font-medium text-gray-800">{district.avgResponseTime}h</span>
               </div>
             </div>
           </div>

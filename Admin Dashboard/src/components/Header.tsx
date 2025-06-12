@@ -64,6 +64,15 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Right Side Controls */}
           <div className="flex items-center gap-4">
+            {/* Admin Toggle */}
+            <button
+              onClick={() => setIsAdmin(!isAdmin)}
+              className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2 hover:bg-white/20 transition-colors"
+            >
+              <Shield className="w-5 h-5" />
+              <span className="font-medium">{isAdmin ? t.publicView : t.adminToggle}</span>
+            </button>
+
             {/* Language Toggle */}
             <div className="relative group">
               <div className="flex items-center gap-2 bg-white/10 rounded-lg p-2 cursor-pointer">

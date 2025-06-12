@@ -190,155 +190,118 @@ export const ReportQueue: React.FC<ReportQueueProps> = ({ language }) => {
     });
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-gray-800">{t.title}</h3>
-        
-        <div className="flex gap-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder={t.search}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Filter Button */}
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-          >
-            <Filter className="w-4 h-4" />
-            <span>{t.filters}</span>
-          </button>
-        </div>
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">{t.title}</h2>
+        <p className="text-gray-600">Manage and track community issue reports</p>
       </div>
 
-      {/* Filter Panel */}
-      {showFilters && (
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">{t.status}</label>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as Report['status'] | 'all')}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">{t.all}</option>
-                <option value="urgent">{t.urgent}</option>
-                <option value="pending">{t.pending}</option>
-                <option value="resolved">{t.resolved}</option>
-              </select>
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-bold text-gray-800">{t.title}</h3>
+          
+          <div className="flex gap-4">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder={t.search}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
+
+            {/* Filter Button */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              <Filter className="w-4 h-4" />
+              <span>{t.filters}</span>
+            </button>
           </div>
         </div>
-      )}
 
-      {/* Reports Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-gray-200">
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                {t.status}
-              </th>
-              <th 
-                className="px-4 py-3 text-left text-sm font-medium text-gray-500 cursor-pointer"
-                onClick={() => handleSort('title')}
-              >
-                <div className="flex items-center gap-1">
-                  {t.title}
-                  {sortField === 'title' && (
-                    sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-                  )}
-                </div>
-              </th>
-              <th 
-                className="px-4 py-3 text-left text-sm font-medium text-gray-500 cursor-pointer"
-                onClick={() => handleSort('district')}
-              >
-                <div className="flex items-center gap-1">
-                  {t.district}
-                  {sortField === 'district' && (
-                    sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-                  )}
-                </div>
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                {t.category}
-              </th>
-              <th 
-                className="px-4 py-3 text-left text-sm font-medium text-gray-500 cursor-pointer"
-                onClick={() => handleSort('daysOpen')}
-              >
-                <div className="flex items-center gap-1">
-                  {t.daysOpen}
-                  {sortField === 'daysOpen' && (
-                    sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-                  )}
-                </div>
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                {t.actions}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredReports.map((report) => {
-              const StatusIcon = getStatusIcon(report.status);
-              return (
+        {/* Filter Panel */}
+        {showFilters && (
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t.status}</label>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as Report['status'] | 'all')}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">{t.all}</option>
+                  <option value="urgent">{t.urgent}</option>
+                  <option value="pending">{t.pending}</option>
+                  <option value="resolved">{t.resolved}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reports Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="text-left p-3 font-medium text-gray-600">Report ID</th>
+                <th className="text-left p-3 font-medium text-gray-600">Type</th>
+                <th className="text-left p-3 font-medium text-gray-600">Location</th>
+                <th className="text-left p-3 font-medium text-gray-600">Status</th>
+                <th className="text-left p-3 font-medium text-gray-600">Priority</th>
+                <th className="text-left p-3 font-medium text-gray-600">Assigned To</th>
+                <th className="text-left p-3 font-medium text-gray-600">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredReports.map((report) => (
                 <tr key={report.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(report.status)}`}>
-                      <StatusIcon className="w-3 h-3" />
+                  <td className="p-3 font-medium text-blue-600">{report.id}</td>
+                  <td className="p-3">{t.categories[report.category as keyof typeof t.categories]}</td>
+                  <td className="p-3">{report.district}</td>
+                  <td className="p-3">
+                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(report.status)}`}>
                       {t[report.status]}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-gray-900">{report.title}</div>
-                    <div className="text-sm text-gray-500">{report.reporter}</div>
+                  <td className="p-3">
+                    <div className="flex items-center gap-1">
+                      {(() => {
+                        const Icon = getStatusIcon(report.status);
+                        return <Icon className="w-4 h-4" />;
+                      })()}
+                    </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">{report.district}</td>
-                  <td className="px-4 py-3 text-sm text-gray-500">{t.categories[report.category as keyof typeof t.categories]}</td>
-                  <td className="px-4 py-3">
-                    <div className="text-sm font-medium text-gray-900">{report.daysOpen}</div>
-                    <div className="text-xs text-gray-500">{report.lastUpdated}</div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
+                  <td className="p-3">{report.assignedTo || 'Unassigned'}</td>
+                  <td className="p-3">
+                    <div className="flex gap-2">
                       <button 
                         onClick={() => setActiveModal({ type: 'assignment', report })}
-                        className="p-1 text-blue-600 hover:text-blue-700"
+                        className="text-blue-600 hover:text-blue-800 text-xs px-2 py-1 bg-blue-100 rounded"
                         title={t.assignOfficer}
                       >
                         <UserPlus className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => setActiveModal({ type: 'notes', report })}
-                        className="p-1 text-gray-600 hover:text-gray-700"
+                        className="text-gray-600 hover:text-gray-800 text-xs px-2 py-1 bg-gray-100 rounded"
                         title={t.addNote}
                       >
                         <MessageSquare className="w-4 h-4" />
                       </button>
-                      <a 
-                        href={`tel:${report.reporter}`}
-                        className="p-1 text-green-600 hover:text-green-700"
-                        title={t.callReporter}
-                      >
-                        <Phone className="w-4 h-4" />
-                      </a>
                     </div>
                   </td>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {filteredReports.length === 0 && (
