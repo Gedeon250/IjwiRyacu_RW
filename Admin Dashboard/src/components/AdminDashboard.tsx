@@ -13,6 +13,7 @@ import {
   Database,
   Award
 } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -35,12 +36,15 @@ export const AdminDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100 dark:bg-dark-bg">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg">
-        <div className="p-4">
-          <h1 className="text-2xl font-bold text-gray-800">Ijwi Ryacu</h1>
-          <p className="text-sm text-gray-600">Admin Dashboard</p>
+      <div className="w-64 bg-white dark:bg-dark-card shadow-lg">
+        <div className="p-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-dark-text">Ijwi Ryacu</h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Admin Dashboard</p>
+          </div>
+          <ThemeToggle />
         </div>
         <nav className="mt-4">
           {navigationItems.map((item) => {
@@ -52,8 +56,8 @@ export const AdminDashboard: React.FC = () => {
                 onClick={() => navigate(item.path)}
                 className={`w-full flex items-center px-4 py-3 text-sm ${
                   isActive 
-                    ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600' 
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-r-4 border-blue-600 dark:border-blue-400' 
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-border'
                 }`}
               >
                 <Icon className="w-5 h-5 mr-3" />

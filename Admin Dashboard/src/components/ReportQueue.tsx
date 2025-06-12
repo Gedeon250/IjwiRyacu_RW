@@ -30,20 +30,67 @@ interface Report {
   notes: string[];
 }
 
-export const ReportQueue: React.FC<ReportQueueProps> = ({ language }) => {
+interface Translations {
+  title: string;
+  subtitle: string;
+  search: string;
+  filters: string;
+  status: string;
+  category: string;
+  district: string;
+  reporter: string;
+  assignedTo: string;
+  daysOpen: string;
+  lastUpdated: string;
+  urgent: string;
+  pending: string;
+  inProgress: string;
+  resolved: string;
+  closed: string;
+  assignOfficer: string;
+  addNote: string;
+  viewDetails: string;
+  all: string;
+  noReports: string;
+  selectOfficer: string;
+  cancel: string;
+  assign: string;
+  note: string;
+  notePlaceholder: string;
+  add: string;
+  categories: {
+    [key: string]: string;
+  };
+  table: {
+    id: string;
+    reporter: string;
+    issue: string;
+    location: string;
+    status: string;
+    assignedTo: string;
+    actions: string;
+  };
+}
+
+export const ReportQueue: React.FC<ReportQueueProps> = ({ language }): JSX.Element => {
   const [sortField, setSortField] = useState<keyof Report>('daysOpen');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<Report['status'] | 'all'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [districtFilter, setDistrictFilter] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
   const [activeModal, setActiveModal] = useState<{
-    type: 'notes' | 'assignment';
+    type: 'assignment' | 'notes';
     report: Report;
   } | null>(null);
+  const [selectedOfficer, setSelectedOfficer] = useState('');
+  const [newNote, setNewNote] = useState('');
 
-  const translations = {
+  const translations: Record<string, Translations> = {
     en: {
       title: 'Report Queue',
+      subtitle: 'Manage and track community issue reports',
       search: 'Search reports...',
       filters: 'Filters',
       status: 'Status',
@@ -55,49 +102,80 @@ export const ReportQueue: React.FC<ReportQueueProps> = ({ language }) => {
       lastUpdated: 'Last Updated',
       urgent: 'Urgent',
       pending: 'Pending',
+      inProgress: 'In Progress',
       resolved: 'Resolved',
-      all: 'All',
+      closed: 'Closed',
       assignOfficer: 'Assign Officer',
-      callReporter: 'Call Reporter',
       addNote: 'Add Note',
-      sortBy: 'Sort by',
+      viewDetails: 'View Details',
+      all: 'All',
       noReports: 'No reports found',
-      actions: 'Actions',
+      selectOfficer: 'Select an officer',
+      cancel: 'Cancel',
+      assign: 'Assign',
+      note: 'Note',
+      notePlaceholder: 'Enter your note here...',
+      add: 'Add',
       categories: {
         infrastructure: 'Infrastructure',
+        security: 'Security',
         health: 'Health',
         education: 'Education',
-        security: 'Security',
         other: 'Other'
+      },
+      table: {
+        id: 'Report ID',
+        reporter: 'Reporter',
+        issue: 'Issue',
+        location: 'Location',
+        status: 'Status',
+        assignedTo: 'Assigned To',
+        actions: 'Actions'
       }
     },
     rw: {
       title: 'Urutonde rwa Raporo',
+      subtitle: 'Gukurikiranwa no gucunga raporo z\'ibibazo by\'abaturage',
       search: 'Shakisha raporo...',
       filters: 'Imyitozo',
       status: 'Imiterere',
       category: 'Ubwoko',
       district: 'Akarere',
-      reporter: 'Ushinzwe',
+      reporter: 'Uwareba',
       assignedTo: 'Yahariwe',
-      daysOpen: 'Iminsi Zikora',
-      lastUpdated: 'Byasubirwaho',
-      urgent: 'Byihutirwa',
+      daysOpen: 'Iminsi y\'ubuzima',
+      lastUpdated: 'Vuguruwe bwa nyuma',
+      urgent: 'Byihuse',
       pending: 'Bitegereje',
+      inProgress: 'Bikora',
       resolved: 'Byakemuwe',
-      all: 'Yose',
-      assignOfficer: 'Tanga Umukozi',
-      callReporter: 'Hamagara Ushinzwe',
-      addNote: 'Bika Inyandiko',
-      sortBy: 'Gutondeka',
+      closed: 'Byafungwe',
+      assignOfficer: 'Harira Umukozi',
+      addNote: 'Bongeraho Inyandiko',
+      viewDetails: 'Reba Ibisobanuro',
+      all: 'Byose',
       noReports: 'Nta raporo zisanzwe',
-      actions: 'Ibikorwa',
+      selectOfficer: 'Hitamo umukozi',
+      cancel: 'Reka',
+      assign: 'Harira',
+      note: 'Inyandiko',
+      notePlaceholder: 'Andika inyandiko yawe hano...',
+      add: 'Bongeraho',
       categories: {
-        infrastructure: 'Ubwubatsi',
+        infrastructure: 'Imishinga',
+        security: 'Umutekano',
         health: 'Ubuzima',
         education: 'Amashuri',
-        security: 'Umutekano',
         other: 'Ibindi'
+      },
+      table: {
+        id: 'ID ya Raporo',
+        reporter: 'Uwareba',
+        issue: 'Ikibazo',
+        location: 'Ahantu',
+        status: 'Imiterere',
+        assignedTo: 'Yahariwe',
+        actions: 'Ibikorwa'
       }
     }
   };
@@ -189,14 +267,42 @@ export const ReportQueue: React.FC<ReportQueueProps> = ({ language }) => {
       return 0;
     });
 
+  const handleAssignOfficer = () => {
+    if (activeModal && selectedOfficer) {
+      // Update the report with the new officer
+      const updatedReports = mockReports.map(report => 
+        report.id === activeModal.report.id 
+          ? { ...report, assignedTo: selectedOfficer }
+          : report
+      );
+      // setReports(updatedReports);
+      setActiveModal(null);
+      setSelectedOfficer('');
+    }
+  };
+
+  const handleAddNote = () => {
+    if (activeModal && newNote.trim()) {
+      // Add the new note to the report
+      const updatedReports = mockReports.map(report => 
+        report.id === activeModal.report.id 
+          ? { ...report, notes: [...report.notes, newNote] }
+          : report
+      );
+      // setReports(updatedReports);
+      setActiveModal(null);
+      setNewNote('');
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">{t.title}</h2>
-        <p className="text-gray-600">Manage and track community issue reports</p>
+        <h2 className="text-3xl font-bold text-gray-800 dark:text-dark-text mb-2">{t.title}</h2>
+        <p className="text-gray-600 dark:text-gray-400">{t.subtitle}</p>
       </div>
 
-      <div className="bg-white rounded-xl shadow-lg p-6">
+      <div className="bg-white dark:bg-dark-card rounded-xl shadow-lg p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold text-gray-800">{t.title}</h3>
           
@@ -209,14 +315,14 @@ export const ReportQueue: React.FC<ReportQueueProps> = ({ language }) => {
                 placeholder={t.search}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-dark-bg dark:text-dark-text"
               />
             </div>
 
             {/* Filter Button */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:bg-dark-card dark:hover:bg-dark-border"
             >
               <Filter className="w-4 h-4" />
               <span>{t.filters}</span>
@@ -226,14 +332,14 @@ export const ReportQueue: React.FC<ReportQueueProps> = ({ language }) => {
 
         {/* Filter Panel */}
         {showFilters && (
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+          <div className="mb-6 p-4 bg-gray-50 dark:bg-dark-card rounded-lg">
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{t.status}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text mb-2">{t.status}</label>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as Report['status'] | 'all')}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-dark-bg dark:text-dark-text"
                 >
                   <option value="all">{t.all}</option>
                   <option value="urgent">{t.urgent}</option>
@@ -246,61 +352,82 @@ export const ReportQueue: React.FC<ReportQueueProps> = ({ language }) => {
         )}
 
         {/* Reports Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="text-left p-3 font-medium text-gray-600">Report ID</th>
-                <th className="text-left p-3 font-medium text-gray-600">Type</th>
-                <th className="text-left p-3 font-medium text-gray-600">Location</th>
-                <th className="text-left p-3 font-medium text-gray-600">Status</th>
-                <th className="text-left p-3 font-medium text-gray-600">Priority</th>
-                <th className="text-left p-3 font-medium text-gray-600">Assigned To</th>
-                <th className="text-left p-3 font-medium text-gray-600">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredReports.map((report) => (
-                <tr key={report.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="p-3 font-medium text-blue-600">{report.id}</td>
-                  <td className="p-3">{t.categories[report.category as keyof typeof t.categories]}</td>
-                  <td className="p-3">{report.district}</td>
-                  <td className="p-3">
-                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(report.status)}`}>
-                      {t[report.status]}
-                    </span>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex items-center gap-1">
-                      {(() => {
-                        const Icon = getStatusIcon(report.status);
-                        return <Icon className="w-4 h-4" />;
-                      })()}
-                    </div>
-                  </td>
-                  <td className="p-3">{report.assignedTo || 'Unassigned'}</td>
-                  <td className="p-3">
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => setActiveModal({ type: 'assignment', report })}
-                        className="text-blue-600 hover:text-blue-800 text-xs px-2 py-1 bg-blue-100 rounded"
-                        title={t.assignOfficer}
-                      >
-                        <UserPlus className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => setActiveModal({ type: 'notes', report })}
-                        className="text-gray-600 hover:text-gray-800 text-xs px-2 py-1 bg-gray-100 rounded"
-                        title={t.addNote}
-                      >
-                        <MessageSquare className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+        <div className="bg-white dark:bg-dark-card rounded-xl shadow-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-dark-border">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {t.table.id}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {t.table.reporter}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {t.table.issue}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {t.table.location}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {t.table.status}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {t.table.assignedTo}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {t.table.actions}
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-dark-border">
+                {filteredReports.map((report) => (
+                  <tr key={report.id} className="hover:bg-gray-50 dark:hover:bg-dark-border/50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-dark-text">
+                      #{report.id}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-dark-text">
+                      {report.reporter}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-dark-text">
+                      {report.title}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-dark-text">
+                      {report.district}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        getStatusColor(report.status)
+                      }`}>
+                        {t[report.status]}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-dark-text">
+                      {report.assignedTo || 'Unassigned'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => setActiveModal({ type: 'assignment', report })}
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 text-xs px-2 py-1 bg-blue-100 dark:bg-dark-card rounded"
+                          title={t.assignOfficer}
+                        >
+                          <UserPlus className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => setActiveModal({ type: 'notes', report })}
+                          className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 text-xs px-2 py-1 bg-gray-100 dark:bg-dark-card rounded"
+                          title={t.addNote}
+                        >
+                          <MessageSquare className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -310,18 +437,81 @@ export const ReportQueue: React.FC<ReportQueueProps> = ({ language }) => {
         </div>
       )}
 
-      {/* Modals */}
-      {activeModal && (
-        <ReportModals
-          language={language}
-          isOpen={true}
-          onClose={() => setActiveModal(null)}
-          type={activeModal.type}
-          reportId={activeModal.report.id}
-          reportTitle={activeModal.report.title}
-          currentAssignee={activeModal.report.assignedTo}
-          currentNotes={activeModal.report.notes}
-        />
+      {/* Assignment Modal */}
+      {activeModal?.type === 'assignment' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-dark-card rounded-xl shadow-lg p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-dark-text mb-4">{t.assignOfficer}</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t.assignedTo}
+                </label>
+                <select 
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-dark-bg dark:text-dark-text"
+                  value={selectedOfficer}
+                  onChange={(e) => setSelectedOfficer(e.target.value)}
+                >
+                  <option value="">{t.selectOfficer}</option>
+                  <option value="officer1">Officer 1</option>
+                  <option value="officer2">Officer 2</option>
+                  <option value="officer3">Officer 3</option>
+                </select>
+              </div>
+              <div className="flex justify-end gap-2">
+                <button 
+                  onClick={() => setActiveModal(null)}
+                  className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                >
+                  {t.cancel}
+                </button>
+                <button 
+                  onClick={handleAssignOfficer}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg"
+                >
+                  {t.assign}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Notes Modal */}
+      {activeModal?.type === 'notes' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-dark-card rounded-xl shadow-lg p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-dark-text mb-4">{t.addNote}</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t.note}
+                </label>
+                <textarea 
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-dark-bg dark:text-dark-text"
+                  rows={4}
+                  value={newNote}
+                  onChange={(e) => setNewNote(e.target.value)}
+                  placeholder={t.notePlaceholder}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <button 
+                  onClick={() => setActiveModal(null)}
+                  className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                >
+                  {t.cancel}
+                </button>
+                <button 
+                  onClick={handleAddNote}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg"
+                >
+                  {t.add}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
